@@ -27,8 +27,8 @@ RUN apt-get update && apt-get install -y curl
 
 RUN pip install --no-cache-dir \
     Flask==3.0.3 \
-    gunicorn==22.0.0 \
-    Werkzeug==3.0.3 \
+    gunicorn==23.0.0 \
+    Werkzeug==3.0.4 \
     geoip2==4.8.0 \
     maxminddb==2.6.2
 
@@ -48,4 +48,6 @@ COPY . ./
 # to be equal to the cores available.
 # Timeout is set to 0 to disable the timeouts of the workers to allow Cloud Run to handle instance scaling.
 
-CMD sh -c "gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 main:app"
+# Run the web service on container startup.
+ENTRYPOINT ["sh", "-c"]
+CMD ["gunicorn --bind :$PORT --workers 1 --threads $(nproc) --timeout 0 main:app"]
